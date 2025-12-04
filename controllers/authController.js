@@ -10,7 +10,7 @@ const generateToken = (id) => {
 };
 
 // POST /auth/register
-exports.register = asyncHandler(async (req, res) => {
+exports.register =async (req, res) => {
   // Houni nestanew nom, login, motDePasse, role (role optionnel)
   const { nom, login, motDePasse, role } = req.body;
   // Ken chay meyji (nom/login/motDePasse) nraja3ou 400
@@ -36,7 +36,7 @@ exports.register = asyncHandler(async (req, res) => {
     role: user.role,
     token: generateToken(user._id),
   });
-});
+};
 
 // POST /auth/login
 exports.login = asyncHandler(async (req, res) => {

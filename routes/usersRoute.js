@@ -9,7 +9,7 @@ const { authenticateToken, isManager } = require('../middlewares/authMiddleware'
 const router = express.Router();
 
 // routes mta3 l users
-router.get('/', authenticateToken, isManager, getAllUsers); // users lkol
+router.get('/getAll', authenticateToken, isManager, getAllUsers); // users lkol
 router.get('/:id', authenticateToken, getUserById); // user hasb l id 
 router.delete('/:id', authenticateToken, isManager, deleteUser); // ken l manager ynajem yfasakh user
 router.put('/:id', authenticateToken, updateUser); 

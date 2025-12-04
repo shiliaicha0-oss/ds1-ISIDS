@@ -5,7 +5,7 @@ const app = express();
 // dotenv : nhezo les variables ml fichier env 
 require('dotenv').config();
 // nimportiw les routes handler 
-const userRoute= require('./routes/userRoute');
+const userRoute= require('./routes/usersRoute');
 const authRoute = require('./routes/authRoute')
 // port njibouh ml env 
 const PORT = process.env.PORT;

@@ -50,4 +50,14 @@ const authenticateToken = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { authenticateToken };
+
+// middleware yverifi ken el user houwa manager
+const isManager = (req, res, next) => {
+  if (req.user.role !== 'manager') {
+    return res.status(403).json({ message: 'Accès refusé : manager uniquement.' });
+  }
+  next();
+};
+
+module.exports = { authenticateToken, isManager };
+

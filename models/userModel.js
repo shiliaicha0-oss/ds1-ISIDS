@@ -9,11 +9,15 @@ const UserSchema = new mongoose.Schema({
   dateCreation: { type: Date, default: Date.now }
 });
 
-// Cryptage du mot de passe
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('motDePasse')) return next();
-  this.motDePasse = await bcrypt.hash(this.motDePasse, 10);
-  next();
+
+UserSchema.pre('save', async function () {
+  // ken l mot de passe ma tbadlch ma naamlo chay
+  if (!this.isModified('motDePasse')) return;
+
+  // Hash du mot de passe
+  const salt = await bcrypt.genSalt(10);
+  this.motDePasse = await bcrypt.hash(this.motDePasse, salt);
 });
 
+// Export modèle
 module.exports = mongoose.model('User', UserSchema);
