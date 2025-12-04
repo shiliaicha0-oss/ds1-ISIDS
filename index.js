@@ -6,7 +6,13 @@ const app = express();
 require('dotenv').config();
 // nimportiw les routes handler 
 const userRoute= require('./routes/usersRoute');
-const authRoute = require('./routes/authRoute')
+const authRoute = require('./routes/authRoute');
+const projectRoute = require('./routes/projectsRoute');
+const taskRoute = require('./routes/tasksRoute');
+
+
+
+
 // port njibouh ml env 
 const PORT = process.env.PORT;
 // nimportiw l middleware cors header
@@ -34,7 +40,8 @@ app.use(cookieParser());
 
 app.use('/user',userRoute);
 app.use('/auth', authRoute);
- 
+app.use('/projects', projectRoute);
+app.use('/tasks', taskRoute);
 // CONNEXION MongoDB
 const connect = async () => {
   try {
