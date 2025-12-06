@@ -1,9 +1,11 @@
+// nimportiw express-async-handler bch naamlo try/catch automatiquement
 const asyncHandler = require('express-async-handler');
 const Task = require('../models/task');
 const Project = require('../models/project');
 const User = require('../models/userModel');
 
 // CREATE TASK (any authenticated user)
+// ay user connecté ynajem yaaml task
 exports.createTask = asyncHandler(async (req, res) => {
   const { titre, description, statut, deadline, projet } = req.body;
 
@@ -19,6 +21,7 @@ exports.createTask = asyncHandler(async (req, res) => {
     throw new Error('Projet introuvable');
   }
 
+  // naamlo création ll task 
   const task = await Task.create({
     titre,
     description,
@@ -30,18 +33,22 @@ exports.createTask = asyncHandler(async (req, res) => {
   res.status(201).json(task);
 });
 
-// GET MY TASKS (only tasks of projects I own or I'm assigned to)
+// GET MY TASKS 
+// yjib tasks li yetaal9ou bih :
+// assignedTo = howa
+// wala projects howa l owner mte3hom
+
 exports.getMyTasks = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   const tasks = await Task.find({
     $or: [
-      { assignedTo: userId },
+      { assignedTo: userId }, // taches assignées l user 
       { projet: { $in: await Project.find({ owner: userId }).distinct('_id') } }
     ]
   })
-    .populate('projet', 'name')
-    .populate('assignedTo', 'nom login');
+    .populate('projet', 'name')    //njib esm projet 
+    .populate('assignedTo', 'nom login');   // esm w login mta3 elli assigned
 
   res.json(tasks);
 });
@@ -68,6 +75,7 @@ exports.getTaskById = asyncHandler(async (req, res) => {
   const isOwner = task.projet.owner.toString() === req.user._id.toString();
   const isAssigned = task.assignedTo?.toString() === req.user._id.toString();
 
+  // controle d'accès
   if (req.user.role !== 'manager' && !isOwner && !isAssigned) {
     res.status(403);
     throw new Error('Accès refusé');
@@ -77,6 +85,7 @@ exports.getTaskById = asyncHandler(async (req, res) => {
 });
 
 // UPDATE TASK (only manager or project owner)
+// manager w project owner kahw
 exports.updateTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id).populate('projet', 'owner');
 
@@ -87,11 +96,13 @@ exports.updateTask = asyncHandler(async (req, res) => {
 
   const isOwner = task.projet.owner.toString() === req.user._id.toString();
 
+  // accès interdit si mahouch manager wala owner
   if (req.user.role !== 'manager' && !isOwner) {
     res.status(403);
     throw new Error('Accès refusé');
   }
-
+ 
+  // mise à jour
   const { titre, description, statut, deadline } = req.body;
 
   if (titre) task.titre = titre;
@@ -105,6 +116,7 @@ exports.updateTask = asyncHandler(async (req, res) => {
 });
 
 // ASSIGN TASK (manager only)
+// manager bark ynajm yaaml assign
 exports.assignTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id);
 
@@ -114,13 +126,13 @@ exports.assignTask = asyncHandler(async (req, res) => {
   }
 
   const { userId } = req.body;
-
+ // nchouf user mawjoud wila lee
   const user = await User.findById(userId);
   if (!user) {
     res.status(404);
     throw new Error('Utilisateur non trouvé');
   }
-
+// naamel assign
   task.assignedTo = userId;
   await task.save();
 
@@ -128,6 +140,7 @@ exports.assignTask = asyncHandler(async (req, res) => {
 });
 
 // DELETE TASK (manager or project owner)
+// manager wla project owner bark ynejm yfasakh
 exports.deleteTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(req.params.id).populate('projet', 'owner');
 
